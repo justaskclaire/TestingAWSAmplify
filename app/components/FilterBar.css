@@ -13,7 +13,7 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* Filter controls - Clear All button */
+/* Filter controls (reset button only) */
 .filter-controls {
   display: flex;
   justify-content: flex-end;
@@ -21,6 +21,12 @@
   gap: var(--space-3);
   padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--color-border-light);
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
 }
 
 .btn-clear-filters {

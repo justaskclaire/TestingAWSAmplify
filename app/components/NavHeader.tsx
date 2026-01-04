@@ -29,9 +29,12 @@ export default function NavHeader() {
   return (
     <nav className="nav-header">
       <div className="nav-content">
-        <Link href="/" className="nav-brand">
-          Studio Claire
-        </Link>
+        <div>
+          <Link href="/" className="nav-brand">
+            Studio Claire
+          </Link>
+          <p className="tagline">Browse what I have. Pick what you love.</p>
+        </div>
         
         <ul className="nav-links">
           {navLinks.map((link) => (

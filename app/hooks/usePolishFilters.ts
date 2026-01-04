@@ -12,7 +12,29 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+
+// localStorage utilities
+function getPolishId(number: string, name: string): string {
+  return `${number}-${name}`;
+}
+
+function getStoredList(key: string): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const data = localStorage.getItem(`nailpolish_${key}`);
+    if (!data) return [];
+    const parsed = JSON.parse(data);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(item => typeof item === 'string');
+  } catch (e) {
+    return [];
+  }
+}
+
+function isInList(key: string, polishId: string): boolean {
+  return getStoredList(key).includes(polishId);
+}
 
 export interface Polish {
   id: string;
@@ -39,6 +61,16 @@ export function usePolishFilters(allPolishes: Polish[]) {
   const [selectedFinishes, setSelectedFinishes] = useState<Set<string>>(new Set());
   const [showFavorites, setShowFavorites] = useState(false);
   const [showNextAppointment, setShowNextAppointment] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  
+  // Listen for personal filter changes from PolishCard components
+  useEffect(() => {
+    const handlePersonalFilterChange = () => {
+      setRefreshTrigger(prev => prev + 1);
+    };
+    window.addEventListener('personalFilterChange', handlePersonalFilterChange);
+    return () => window.removeEventListener('personalFilterChange', handlePersonalFilterChange);
+  }, []);
 
   // Toggle functions
   const toggleColor = (color: string) => {
@@ -102,14 +134,20 @@ export function usePolishFilters(allPolishes: Polish[]) {
       const matchesFinish = selectedFinishes.size === 0 || 
         selectedFinishes.has(polish.finish);
 
-      // Personalization filters (TODO: implement with user preferences from database)
-      // For now, these will always pass since we don't have user data yet
-      const matchesPersonalization = true;
+      // Personal filter: OR logic within personal filters
+      // If no personal filters selected, pass. Otherwise, check if polish is in selected lists
+      let matchesPersonal = !showFavorites && !showNextAppointment;
+      if (showFavorites || showNextAppointment) {
+        const polishId = getPolishId(polish.number, polish.name);
+        matchesPersonal = 
+          (showFavorites && isInList('favorites', polishId)) ||
+          (showNextAppointment && isInList('nextappt', polishId));
+      }
 
       // AND logic between filter categories
-      return matchesColor && matchesFinish && matchesPersonalization;
+      return matchesColor && matchesFinish && matchesPersonal;
     });
-  }, [allPolishes, selectedColors, selectedFinishes, showFavorites, showNextAppointment]);
+  }, [allPolishes, selectedColors, selectedFinishes, showFavorites, showNextAppointment, refreshTrigger]);
 
   return {
     // State

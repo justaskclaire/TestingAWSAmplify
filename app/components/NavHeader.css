@@ -32,6 +32,13 @@
   color: var(--color-primary-600);
 }
 
+.tagline {
+  margin: var(--space-1) 0 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-normal);
+}
+
 .nav-links {
   display: flex;
   gap: var(--space-3);

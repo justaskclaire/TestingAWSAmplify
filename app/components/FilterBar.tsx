@@ -15,6 +15,8 @@
 
 'use client';
 
+import './FilterBar.css';
+
 interface FilterBarProps {
   onClearAll: () => void;
   hasActiveFilters: boolean;
@@ -29,8 +31,9 @@ export default function FilterBar({
   
   return (
     <div className="filter-bar">
-      {/* Filter controls - Clear All button */}
+      {/* Filter Controls (NPI-017) - Reset button */}
       <div className="filter-controls">
+        <p className="hint" style={{ margin: 0, color: 'var(--color-text-muted)' }}>Use filters to narrow by color family and finish</p>
         <button
           type="button"
           className="btn-clear-filters"

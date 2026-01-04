@@ -7,11 +7,12 @@
  * - Polish name
  * - Hover effects (lift, shadow, image zoom)
  * - Link to product page
- * - Favorite/Next Appt icons (to be implemented in Phase 4)
+ * - Favorite/Next Appt icons with localStorage persistence
  */
 
 'use client';
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import './PolishCard.css';
 
@@ -23,41 +24,86 @@ export interface PolishCardProps {
   productLink: string;
   colors: string[];
   finish: string;
-  isFavorite?: boolean;
-  isNextAppt?: boolean;
-  onFavoriteToggle?: (id: string) => void;
-  onNextApptToggle?: (id: string) => void;
+}
+
+// localStorage utilities
+function getPolishId(number: string, name: string): string {
+  return `${number}-${name}`;
+}
+
+function getStoredList(key: string): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const data = localStorage.getItem(`nailpolish_${key}`);
+    if (!data) return [];
+    const parsed = JSON.parse(data);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(item => typeof item === 'string');
+  } catch (e) {
+    console.warn(`Failed to load ${key} from localStorage:`, e);
+    return [];
+  }
+}
+
+function saveStoredList(key: string, list: string[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(`nailpolish_${key}`, JSON.stringify(list));
+  } catch (e) {
+    console.error(`Failed to save ${key} to localStorage:`, e);
+  }
+}
+
+function toggleInList(key: string, polishId: string): boolean {
+  const list = getStoredList(key);
+  const index = list.indexOf(polishId);
+  
+  if (index > -1) {
+    list.splice(index, 1);
+    saveStoredList(key, list);
+    return false;
+  } else {
+    list.push(polishId);
+    saveStoredList(key, list);
+    return true;
+  }
+}
+
+function isInList(key: string, polishId: string): boolean {
+  return getStoredList(key).includes(polishId);
 }
 
 export default function PolishCard({
-  id,
   number,
   name,
   imageUrl,
   productLink,
-  colors,
-  finish,
-  isFavorite = false,
-  isNextAppt = false,
-  onFavoriteToggle,
-  onNextApptToggle,
 }: PolishCardProps) {
+  const polishId = getPolishId(number, name);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isNextAppt, setIsNextAppt] = useState(false);
   
-  // Handle icon clicks - prevent navigation to product page
+  useEffect(() => {
+    setIsFavorite(isInList('favorites', polishId));
+    setIsNextAppt(isInList('nextappt', polishId));
+  }, [polishId]);
+  
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onFavoriteToggle) {
-      onFavoriteToggle(id);
-    }
+    const newState = toggleInList('favorites', polishId);
+    setIsFavorite(newState);
+    // Dispatch custom event for filter update
+    window.dispatchEvent(new CustomEvent('personalFilterChange'));
   };
   
   const handleNextApptClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onNextApptToggle) {
-      onNextApptToggle(id);
-    }
+    const newState = toggleInList('nextappt', polishId);
+    setIsNextAppt(newState);
+    // Dispatch custom event for filter update
+    window.dispatchEvent(new CustomEvent('personalFilterChange'));
   };
   
   // Determine if we should show the icon container
@@ -90,7 +136,7 @@ export default function PolishCard({
             aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
-            {isFavorite ? '❤️' : '♡'}
+            {isFavorite ? '❤️' : '🤍'}
           </button>
           
           <button
@@ -100,7 +146,7 @@ export default function PolishCard({
             aria-label={isNextAppt ? 'Remove from next appointment' : 'Add to next appointment'}
             title={isNextAppt ? 'Remove from next appointment' : 'Add to next appointment'}
           >
-            📅
+            {isNextAppt ? '📅' : '🗓️'}
           </button>
         </div>
       </div>

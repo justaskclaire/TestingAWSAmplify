@@ -16,8 +16,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Studio Claire - Nail Polish Gallery",
-  description: "Browse my nail polish collection and pick what you love. Filter by color and finish.",
+  title: "Studio Claire",
+  description: "Studio Claire - Browse my nail polish collection and pick what you love. Filter by color and finish.",
 };
 
 export default function RootLayout({
