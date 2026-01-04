@@ -1,0 +1,219 @@
+/* Polish Card Styles */
+
+.card {
+  display: block;
+  position: relative;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-surface);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+/* Gradient border effect on hover */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--radius-lg);
+  padding: 1px;
+  background: linear-gradient(135deg, transparent 0%, var(--color-primary-100) 50%, transparent 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  pointer-events: none;
+}
+
+.card:hover {
+  border-color: transparent;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px) scale(1.02);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* Image container */
+.card-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-gray-100) 100%);
+}
+
+.card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition-slow);
+}
+
+.card:hover .card-thumb {
+  transform: scale(1.05);
+}
+
+/* Card metadata */
+.card-meta {
+  padding: var(--space-3);
+  background: linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.8) 100%);
+}
+
+.card-num {
+  display: inline-block;
+  font-weight: var(--font-weight-black);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  padding: 2px 6px;
+  background: var(--color-gray-100);
+  border-radius: 4px;
+  margin-bottom: var(--space-1);
+}
+
+.card-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+/* ============================================
+   PERSONALIZATION ICONS
+   ============================================ */
+
+.card-icons {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: flex;
+  gap: var(--space-1);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+/* Show icons on card hover or when active */
+.card:hover .card-icons,
+.card-icons.has-active {
+  opacity: 1;
+}
+
+/* Base icon button style */
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--color-border-light);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+  padding: 0;
+}
+
+.icon-btn:hover {
+  transform: scale(1.15);
+  box-shadow: var(--shadow-md);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  transform: scale(1.1);
+}
+
+.icon-btn:active {
+  transform: scale(1.05);
+}
+
+/* Favorite heart icon */
+.favorite-btn {
+  color: var(--color-gray-400);
+}
+
+.favorite-btn:hover {
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-200);
+  background: var(--color-primary-50);
+}
+
+.favorite-btn:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-color: var(--color-primary-300);
+  background: var(--color-primary-50);
+}
+
+.favorite-btn.active {
+  color: var(--color-primary-600);
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-100);
+}
+
+.favorite-btn.active:hover {
+  color: var(--color-primary-700);
+}
+
+/* Next Appointment calendar icon */
+.nextappt-btn {
+  color: var(--color-gray-400);
+}
+
+.nextappt-btn:hover {
+  color: #3b82f6;  /* Blue for calendar */
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.nextappt-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.nextappt-btn.active {
+  color: #2563eb;
+  border-color: #3b82f6;
+  background: #dbeafe;
+}
+
+.nextappt-btn.active:hover {
+  color: #1d4ed8;
+}
+
+/* Mobile: Always show icons if active, larger touch targets */
+@media (max-width: 768px) {
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+  
+  .card-icons.has-active {
+    opacity: 0.9;
+  }
+  
+  .card:active .card-icons {
+    opacity: 1;
+  }
+}
